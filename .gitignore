@@ -1,0 +1,36 @@
+# Gradle
+.gradle/
+build/
+target/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+out/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+*.txt
+
+# Environment
+.env
+
+# Java
+*.class
+
+# H2 database files
+*.h2.db
+*.mv.db
+*.trace.db
+
+# JUnit reports
+/test-output/
+
+# IntelliJ run configs
+run/
