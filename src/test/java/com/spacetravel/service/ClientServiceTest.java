@@ -1,19 +1,19 @@
 package com.spacetravel.service;
 
+import com.spacetravel.dao.ClientDaoImpl;
 import com.spacetravel.entity.Client;
 import com.spacetravel.exception.ClientNotFoundException;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.*;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ClientServiceTest {
 
-    private static ClientCrudService service;
+    private static ClientCrudServiceImpl service;
     private static Long createdClientId;
 
     @BeforeAll
@@ -31,7 +31,7 @@ class ClientServiceTest {
 
         flyway.migrate();
 
-        service = new ClientCrudService();
+        service = new ClientCrudServiceImpl(new ClientDaoImpl());
     }
 
 
@@ -54,12 +54,12 @@ class ClientServiceTest {
     @Order(2)
     void givenExistingClientId_whenFindById_thenReturnClient() {
         // When
-        Optional<Client> actualClientOpt = service.findById(createdClientId);
+        Client actualClient = service.findById(createdClientId);
 
         // Then
-        assertTrue(actualClientOpt.isPresent(), "Client should be found by existing ID");
+        assertNotNull(actualClient, "Client should be found by existing ID");
         String expectedName = "Test Client";
-        String actualName = actualClientOpt.get().getName();
+        String actualName = actualClient.getName();
         assertEquals(expectedName, actualName, "Client name should match expected");
     }
 
@@ -69,11 +69,10 @@ class ClientServiceTest {
         // Given
         Long invalidId = 9999L;
 
-        // When
-        Optional<Client> actualClientOpt = service.findById(invalidId);
-
         // Then
-        assertTrue(actualClientOpt.isEmpty(), "No client should be found for invalid ID");
+        assertThrows(ClientNotFoundException.class,
+                () -> service.findById(invalidId),
+                "Finding non-existing client should throw ClientNotFoundException");
     }
 
     @Test
@@ -119,8 +118,9 @@ class ClientServiceTest {
         assertDoesNotThrow(() -> service.delete(createdClientId), "Deleting existing client should not throw");
 
         // Then
-        Optional<Client> deletedClientOpt = service.findById(createdClientId);
-        assertTrue(deletedClientOpt.isEmpty(), "Client should be deleted and not found");
+        assertThrows(ClientNotFoundException.class,
+                () -> service.findById(createdClientId),
+                "After deletion, client should not be found and throw ClientNotFoundException");
     }
 
     @Test

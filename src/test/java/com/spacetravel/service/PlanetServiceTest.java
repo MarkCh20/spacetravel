@@ -1,19 +1,19 @@
 package com.spacetravel.service;
 
+import com.spacetravel.dao.PlanetDaoImpl;
 import com.spacetravel.entity.Planet;
 import com.spacetravel.exception.PlanetNotFoundException;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.*;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class PlanetServiceTest {
 
-    private static PlanetCrudService service;
+    private static PlanetCrudServiceImpl service;
     private static final String PLANET_ID = "planet-001";
 
     @BeforeAll
@@ -31,7 +31,7 @@ class PlanetServiceTest {
 
         flyway.migrate();
 
-        service = new PlanetCrudService();
+        service = new PlanetCrudServiceImpl(new PlanetDaoImpl());
     }
 
 
@@ -53,12 +53,12 @@ class PlanetServiceTest {
     @Order(2)
     void givenExistingPlanetId_whenFindById_thenReturnPlanet() {
         // When
-        Optional<Planet> actualPlanetOpt = service.findById(PLANET_ID);
+        Planet actualPlanet = service.findById(PLANET_ID);
 
         // Then
-        assertTrue(actualPlanetOpt.isPresent(), "Planet should be found by existing ID");
+        assertNotNull(actualPlanet, "Planet should be found by existing ID");
         String expectedName = "Earth 2";
-        String actualName = actualPlanetOpt.get().getName();
+        String actualName = actualPlanet.getName();
         assertEquals(expectedName, actualName, "Planet name should be 'Earth 2'");
     }
 
@@ -68,11 +68,10 @@ class PlanetServiceTest {
         // Given
         String invalidId = "invalid-planet";
 
-        // When
-        Optional<Planet> actualPlanetOpt = service.findById(invalidId);
-
         // Then
-        assertTrue(actualPlanetOpt.isEmpty(), "No planet should be found for invalid ID");
+        assertThrows(PlanetNotFoundException.class,
+                () -> service.findById(invalidId),
+                "Finding non-existing planet should throw PlanetNotFoundException");
     }
 
     @Test
@@ -118,8 +117,9 @@ class PlanetServiceTest {
         assertDoesNotThrow(() -> service.delete(PLANET_ID), "Deleting existing planet should not throw");
 
         // Then
-        Optional<Planet> deletedPlanetOpt = service.findById(PLANET_ID);
-        assertTrue(deletedPlanetOpt.isEmpty(), "Planet should be deleted and not found");
+        assertThrows(PlanetNotFoundException.class,
+                () -> service.findById(PLANET_ID),
+                "After deletion, planet should not be found and throw PlanetNotFoundException");
     }
 
     @Test

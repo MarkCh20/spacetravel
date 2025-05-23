@@ -11,7 +11,7 @@ import java.util.List;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PlanetDaoTest {
 
-    private PlanetDao planetDao;
+    private PlanetDaoImpl planetDao;
 
     @BeforeAll
     public void setUp() {
@@ -23,7 +23,7 @@ public class PlanetDaoTest {
                 .load();
         flyway.migrate();
 
-        planetDao = new PlanetDao();
+        planetDao = new PlanetDaoImpl();
     }
 
 

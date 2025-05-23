@@ -1,20 +1,20 @@
 package com.spacetravel.integration;
 
+import com.spacetravel.dao.PlanetDaoImpl;
 import com.spacetravel.entity.Planet;
 import com.spacetravel.exception.PlanetNotFoundException;
-import com.spacetravel.service.PlanetCrudService;
+import com.spacetravel.service.PlanetCrudServiceImpl;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.*;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PlanetIntegrationTest {
 
-    private static PlanetCrudService planetService;
+    private static PlanetCrudServiceImpl planetService;
     private static String testPlanetId;
 
     @BeforeAll
@@ -27,7 +27,7 @@ public class PlanetIntegrationTest {
                 .load();
 
         flyway.migrate();
-        planetService  = new PlanetCrudService();
+        planetService  = new PlanetCrudServiceImpl(new PlanetDaoImpl());
     }
 
     @Test
@@ -52,11 +52,11 @@ public class PlanetIntegrationTest {
     @Order(2)
     void givenPlanetId_whenFindById_thenReturnPlanet() {
         // When
-        Optional<Planet> actualPlanetOpt = planetService.findById(testPlanetId);
+        Planet actualPlanet = planetService.findById(testPlanetId);
 
         // Then
-        assertTrue(actualPlanetOpt.isPresent());
-        assertEquals("Test Planet", actualPlanetOpt.get().getName());
+        assertNotNull(actualPlanet);
+        assertEquals("Test Planet", actualPlanet.getName());
     }
 
     @Test
@@ -88,11 +88,8 @@ public class PlanetIntegrationTest {
         // When / Then
         assertDoesNotThrow(() -> planetService.delete(testPlanetId));
 
-        // When
-        Optional<Planet> actualPlanetOpt = planetService.findById(testPlanetId);
-
         // Then
-        assertTrue(actualPlanetOpt.isEmpty());
+        assertThrows(PlanetNotFoundException.class, () -> planetService.findById(testPlanetId));
     }
 
     @Test
@@ -121,10 +118,7 @@ public class PlanetIntegrationTest {
         // Given
         String invalidId = "UNKNOWN";
 
-        // When
-        Optional<Planet> actualResult = planetService.findById(invalidId);
-
         // Then
-        assertTrue(actualResult.isEmpty());
+        assertThrows(PlanetNotFoundException.class, () -> planetService.findById(invalidId));
     }
 }

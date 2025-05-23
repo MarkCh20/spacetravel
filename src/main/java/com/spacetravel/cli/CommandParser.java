@@ -1,23 +1,30 @@
 package com.spacetravel.cli;
 
+import com.spacetravel.dao.ClientDaoImpl;
+import com.spacetravel.dao.PlanetDaoImpl;
 import com.spacetravel.entity.Client;
 import com.spacetravel.entity.Planet;
+
 import com.spacetravel.exception.ClientNotFoundException;
 import com.spacetravel.exception.DuplicatePlanetIdException;
 import com.spacetravel.exception.PlanetNotFoundException;
-import com.spacetravel.service.ClientCrudService;
-import com.spacetravel.service.PlanetCrudService;
+import com.spacetravel.service.ClientCrudServiceImpl;
+import com.spacetravel.service.PlanetCrudServiceImpl;
 import com.spacetravel.util.LoggerUtil;
 import org.slf4j.Logger;
 
 import java.util.List;
-import java.util.Optional;
 
 public class CommandParser {
 
-    private final ClientCrudService clientService = new ClientCrudService();
-    private final PlanetCrudService planetService = new PlanetCrudService();
+    private final ClientCrudServiceImpl clientService;
+    private final PlanetCrudServiceImpl planetService;
     private final Logger logger = LoggerUtil.getLogger(CommandParser.class);
+
+    public CommandParser() {
+        this.clientService = new ClientCrudServiceImpl(new ClientDaoImpl());
+        this.planetService = new PlanetCrudServiceImpl(new PlanetDaoImpl());
+    }
 
     /**
      * Processes a command from CLI arguments and returns a completion code:
@@ -71,7 +78,7 @@ public class CommandParser {
                 switch (action) {
                     case "create":
                         if (args.length < 3) {
-                            System.out.println("Usage: client create <name>");
+                            System.out.println("Invalid usage of command " + action + ": Please use command as client create <name>");
                             return 1;
                         }
                         String clientName = String.join(" ", java.util.Arrays.copyOfRange(args, 2, args.length));
@@ -90,20 +97,21 @@ public class CommandParser {
 
                     case "get":
                         if (args.length != 3) {
-                            System.out.println("Usage: client get <id>");
+                            System.out.println("Invalid usage of command " + action + ": Please use command as client get <id>");
                             return 1;
                         }
                         Long clientIdGet = Long.parseLong(args[2]);
-                        Optional<Client> client = clientService.findById(clientIdGet);
-                        client.ifPresentOrElse(
-                                c -> System.out.println("Client: " + c.getId() + " - " + c.getName()),
-                                () -> System.out.println("Client not found with ID: " + clientIdGet)
-                        );
+                        try {
+                            Client client = clientService.findById(clientIdGet);
+                            System.out.println("Client with id " + client.getId() + ": - " + client.getName());
+                        } catch (ClientNotFoundException e) {
+                            System.out.println(e.getMessage());
+                        }
                         return 0;
 
                     case "update":
                         if (args.length < 4) {
-                            System.out.println("Usage: client update <id> <new_name>");
+                            System.out.println("Invalid usage of command " + action + ": Please use command as client update <id> <new_name>");
                             return 1;
                         }
                         Long clientIdUpdate = Long.parseLong(args[2]);
@@ -114,12 +122,12 @@ public class CommandParser {
 
                     case "delete":
                         if (args.length != 3) {
-                            System.out.println("Usage: client delete <id>");
+                            System.out.println("Invalid usage of command " + action + ": Please use command as client delete <id>");
                             return 1;
                         }
                         Long clientIdDel = Long.parseLong(args[2]);
                         clientService.delete(clientIdDel);
-                        System.out.println("Deleted client " + clientIdDel);
+                        System.out.println("Deleted client with ID:" + clientIdDel);
                         return 0;
 
                     default:
@@ -151,7 +159,7 @@ public class CommandParser {
                 switch (action) {
                     case "create":
                         if (args.length < 4) {
-                            System.out.println("Usage: planet create <id> <name>");
+                            System.out.println("Invalid usage of command " + action + ": Please use command as planet create <id> <name>");
                             return 1;
                         }
                         String planetId = args[2];
@@ -171,20 +179,21 @@ public class CommandParser {
 
                     case "get":
                         if (args.length != 3) {
-                            System.out.println("Usage: planet get <id>");
+                            System.out.println("Invalid usage of command " + action + ": Please use command as planet get <id>");
                             return 1;
                         }
                         String planetIdGet = args[2];
-                        Optional<Planet> planet = planetService.findById(planetIdGet);
-                        planet.ifPresentOrElse(
-                                p -> System.out.println("Planet: " + p.getId() + " - " + p.getName()),
-                                () -> System.out.println("Planet not found with ID: " + planetIdGet)
-                        );
+                        try {
+                            Planet planet = planetService.findById(planetIdGet);
+                            System.out.println("Planet with id " + planet.getId() + ": - " + planet.getName());
+                        } catch (PlanetNotFoundException e) {
+                            System.out.println(e.getMessage());
+                        }
                         return 0;
 
                     case "update":
                         if (args.length < 4) {
-                            System.out.println("Usage: planet update <id> <new_name>");
+                            System.out.println("Invalid usage of command " + action + ": Please use command as planet update <id> <new_name>");
                             return 1;
                         }
                         String planetIdUpdate = args[2];
@@ -195,12 +204,12 @@ public class CommandParser {
 
                     case "delete":
                         if (args.length != 3) {
-                            System.out.println("Usage: planet delete <id>");
+                            System.out.println("Invalid usage of command " + action + ": Please use command as planet delete <id>");
                             return 1;
                         }
                         String planetIdDel = args[2];
                         planetService.delete(planetIdDel);
-                        System.out.println("Deleted planet " + planetIdDel);
+                        System.out.println("Deleted planet with ID" + planetIdDel);
                         return 0;
 
                     default:

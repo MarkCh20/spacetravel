@@ -11,7 +11,7 @@ import java.util.List;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ClientDaoTest {
 
-    private ClientDao clientDao;
+    private ClientDaoImpl clientDao;
 
     @BeforeAll
     public void setUp() {
@@ -23,7 +23,7 @@ public class ClientDaoTest {
                 .load();
         flyway.migrate();
 
-        clientDao = new ClientDao();
+        clientDao = new ClientDaoImpl();
     }
 
 

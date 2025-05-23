@@ -11,12 +11,12 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class HibernateUtil {
-    private static final Logger logger = LoggerUtil.getLogger(HibernateUtil.class);
-    private static final SessionFactory sessionFactory = buildSessionFactory();
+    private static final Logger LOGGER = LoggerUtil.getLogger(HibernateUtil.class);
+    private static final SessionFactory SESSION_FACTORY = buildSessionFactory();
 
     private static SessionFactory buildSessionFactory() {
         try {
-            logger.info("Building Hibernate SessionFactory...");
+            LOGGER.info("Building Hibernate SessionFactory...");
             Configuration configuration = new Configuration();
 
             String propertiesFile = System.getProperty("config.file", "application.properties");
@@ -32,21 +32,21 @@ public class HibernateUtil {
             configuration.addAnnotatedClass(Client.class);
             configuration.addAnnotatedClass(Planet.class);
 
-            logger.info("Hibernate SessionFactory created successfully.");
+            LOGGER.info("Hibernate SessionFactory created successfully.");
             return configuration.buildSessionFactory();
         } catch (Exception e) {
-            logger.error("SessionFactory creation failed", e);
+            LOGGER.error("SessionFactory creation failed", e);
             throw new ExceptionInInitializerError(e);
         }
     }
 
     public static SessionFactory getSessionFactory() {
-        return sessionFactory;
+        return SESSION_FACTORY;
     }
 
     public static void shutdown() {
-        logger.info("Shutting down Hibernate SessionFactory...");
+        LOGGER.info("Shutting down Hibernate SessionFactory...");
         getSessionFactory().close();
-        logger.info("SessionFactory shutdown complete.");
+        LOGGER.info("SessionFactory shutdown complete.");
     }
 }

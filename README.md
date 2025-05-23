@@ -22,11 +22,11 @@
 
 - Automatic schema creation and data population using Flyway migrations.
 
-- H2 Database – lightweight embedded database; file-based in the application, in-memory for testing.
+- Lightweight H2 database – file-based for development, in-memory for testing.
 
 - Full CRUD functionality for Client and Planet entities.
 
-- A simple, modular CLI interface for user interaction.
+- Modular CLI interface and layered architecture using interfaces for flexibility and testability.
 
 **Core concepts:**
 
@@ -47,6 +47,12 @@
 - ✅ H2 database (embedded)
 
 - ✅ Full CLI control with error handling
+
+- ✅ Clean separation of concerns: CLI ↔ Service ↔ DAO ↔ DB
+
+- ✅ Interface-based design for DAO and Service layers
+
+- ✅ Dependency injection via constructors
 
 - ✅ CRUD operations for both entities:
 
@@ -84,11 +90,15 @@
 
 - `App.java` – entry point; initializes the command parser
 
-- `CommandParser.java` – CLI command processor
+- `CommandParser.java` – CLI command processor; wires services with DAO implementations
 
-- `ClientCrudService.java`, `PlanetCrudService.java` – business logic services
+- `ClientCrudServiceImpl.java`, `PlanetCrudServiceImpl .java` – business logic services; service implementations, injected via constructors
 
-- `ClientDao.java`, `PlanetDao.java` – DAO layer using Hibernate
+- `ClientDaoImpl.java`, `PlanetDaoImpl.java` – DAO layer using Hibernate; DAO implementations
+
+- **Interfaces**:
+    - `ClientCrudService`, `PlanetCrudService`
+    - `ClientDao`, `PlanetDao`
 
 - `Client.java`, `Planet.java` – JPA entities
 
@@ -109,9 +119,11 @@
 
 2. CommandParser parses the command and delegates to the correct service.
 
-3. The service uses the DAO to interact with the database via Hibernate.
+3. Services call DAOs (wired via constructor injection).
 
-4. Results are displayed in the console.
+4. DAOs interact with the DB via Hibernate.
+
+5. Results are displayed in the console.
 
 **Typical scenarios:**
 
@@ -120,7 +132,6 @@
 - planet list → lists all planets
 
 - client delete 3 → deletes client with ID = 3
-
 
 
 ## ▶️ How to Run
@@ -164,7 +175,7 @@ For example
 
 ## 💻 Command Examples
 
-### Main Commands
+### Core Commands
 
 ```bash
 help                          # Show help menu
@@ -213,10 +224,10 @@ spacetravel/
 │   │   ├── java/com/spacetravel/
 │   │   │   ├── cli/                # App.java, CommandParser.java
 │   │   │   ├── config/             # Hibernate and Flyway setup
-│   │   │   ├── dao/                # ClientDao, PlanetDao
+│   │   │   ├── dao/                # ClientDao, PlanetDao interfaces + implementations
 │   │   │   ├── entity/             # Client, Planet (JPA entities)
 │   │   │   ├── exception/          # Custom exceptions
-│   │   │   ├── service/            # Business logic (CRUD services)
+│   │   │   ├── service/            # Business logic (CRUD services) interfaces + implementations
 │   │   │   └── util/               # Logger utility
 │   │   └── resources/
 │   │       ├── application.properties

@@ -1,20 +1,20 @@
 package com.spacetravel.integration;
 
+import com.spacetravel.dao.ClientDaoImpl;
 import com.spacetravel.entity.Client;
 import com.spacetravel.exception.ClientNotFoundException;
-import com.spacetravel.service.ClientCrudService;
+import com.spacetravel.service.ClientCrudServiceImpl;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.*;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ClientIntegrationTest {
 
-    private static ClientCrudService clientService;
+    private static ClientCrudServiceImpl clientService;
     private static Long testClientId;
 
     @BeforeAll
@@ -27,7 +27,7 @@ public class ClientIntegrationTest {
                 .load();
 
         flyway.migrate();
-        clientService = new ClientCrudService();
+        clientService = new ClientCrudServiceImpl(new ClientDaoImpl());
     }
 
     @Test
@@ -50,11 +50,11 @@ public class ClientIntegrationTest {
     @Order(2)
     void givenClientId_whenFindById_thenReturnClient() {
         // When
-        Optional<Client> actualClientOpt = clientService.findById(testClientId);
+        Client actualClient = clientService.findById(testClientId);
 
         // Then
-        assertTrue(actualClientOpt.isPresent());
-        assertEquals("Integration User", actualClientOpt.get().getName());    }
+        assertNotNull(actualClient);
+        assertEquals("Integration User", actualClient.getName());    }
 
 
     @Test
@@ -86,11 +86,8 @@ public class ClientIntegrationTest {
         // When / Then
         assertDoesNotThrow(() -> clientService.delete(testClientId));
 
-        // When
-        Optional<Client> actualClientOpt = clientService.findById(testClientId);
-
         // Then
-        assertTrue(actualClientOpt.isEmpty());
+        assertThrows(ClientNotFoundException.class, () -> clientService.findById(testClientId));
     }
 
     @Test
@@ -117,10 +114,7 @@ public class ClientIntegrationTest {
         // Given
         Long invalidId = 9999L;
 
-        // When
-        Optional<Client> actualResult = clientService.findById(invalidId);
-
         // Then
-        assertTrue(actualResult.isEmpty());
+        assertThrows(ClientNotFoundException.class, () -> clientService.findById(invalidId));
     }
 }
