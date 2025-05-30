@@ -7,11 +7,11 @@ import java.lang.reflect.Field;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PlanetEntityTest {
+class PlanetEntityTest {
 
 
     @Test
-    public void givenPlanet_whenSetIdAndName_thenGettersReturnCorrectValues() {
+    void givenPlanet_whenSetIdAndName_thenGettersReturnCorrectValues() {
         // Given
         Planet planet = new Planet();
         planet.setId("MARS");
@@ -28,7 +28,7 @@ public class PlanetEntityTest {
 
 
     @Test
-    public void givenIdAndNameInConstructor_whenCreatePlanet_thenFieldsAreSetCorrectly() {
+    void givenIdAndNameInConstructor_whenCreatePlanet_thenFieldsAreSetCorrectly() {
         // Given
         String expectedId = "VENUS";
         String expectedName = "Venus";
@@ -43,17 +43,22 @@ public class PlanetEntityTest {
 
 
     @Test
-    public void givenPlanetClass_whenCheckAnnotations_thenAllEntityAnnotationsPresentAndCorrect() throws NoSuchFieldException {
+    void givenPlanetClass_whenCheckAnnotations_thenAllEntityAnnotationsPresentAndCorrect() throws NoSuchFieldException {
         // Given & When & Then
+
+        // @Entity and @Table
         assertTrue(Planet.class.isAnnotationPresent(Entity.class));
         assertTrue(Planet.class.isAnnotationPresent(Table.class));
         assertEquals("planet", Planet.class.getAnnotation(Table.class).name());
 
+        // @Id and @Column on id Field
         Field idField = Planet.class.getDeclaredField("id");
         assertTrue(idField.isAnnotationPresent(Id.class));
+        assertTrue(idField.isAnnotationPresent(Column.class));
         Column idColumn = idField.getAnnotation(Column.class);
         assertEquals(10, idColumn.length());
 
+        // @Column on name field
         Field nameField = Planet.class.getDeclaredField("name");
         assertTrue(nameField.isAnnotationPresent(Column.class));
         Column nameColumn = nameField.getAnnotation(Column.class);

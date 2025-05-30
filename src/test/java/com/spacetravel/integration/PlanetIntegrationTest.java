@@ -1,6 +1,7 @@
 package com.spacetravel.integration;
 
 import com.spacetravel.dao.PlanetDaoImpl;
+import com.spacetravel.dao.TicketDaoImpl;
 import com.spacetravel.entity.Planet;
 import com.spacetravel.exception.PlanetNotFoundException;
 import com.spacetravel.service.PlanetCrudServiceImpl;
@@ -12,7 +13,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class PlanetIntegrationTest {
+class PlanetIntegrationTest {
 
     private static PlanetCrudServiceImpl planetService;
     private static String testPlanetId;
@@ -27,7 +28,7 @@ public class PlanetIntegrationTest {
                 .load();
 
         flyway.migrate();
-        planetService  = new PlanetCrudServiceImpl(new PlanetDaoImpl());
+        planetService  = new PlanetCrudServiceImpl(new PlanetDaoImpl(), new TicketDaoImpl());
     }
 
     @Test

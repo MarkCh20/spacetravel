@@ -5,8 +5,15 @@ public class PlanetNotFoundException extends RuntimeException {
         super(message + id);
     }
 
-    public PlanetNotFoundException(String id) {
-        super("Planet with id " + id + " not found.");
+    public PlanetNotFoundException(String ignoredMessage) {
+        // Constructor for PlanetNotFoundException forId and forName
     }
 
+    public static PlanetNotFoundException forId(String id) {
+        return new PlanetNotFoundException("Planet with id '" + id + "' not found.");
+    }
+
+    public static PlanetNotFoundException forName(String name) {
+        return new PlanetNotFoundException("Planet with name '" + name + "' not found.");
+    }
 }

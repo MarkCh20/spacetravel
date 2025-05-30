@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class ClientDaoImpl implements ClientDao {
-    private static final Logger LOGGER = LoggerUtil.getLogger(ClientDao.class);
+    private static final Logger LOGGER = LoggerUtil.getLogger(ClientDaoImpl.class);
 
     public Client save(Client client) {
         Transaction tx = null;
@@ -27,7 +27,6 @@ public class ClientDaoImpl implements ClientDao {
                 tx.rollback();
             }
             String msg = "Error saving client: " + client.getName();
-            LOGGER.error(msg, e);
             throw new DataProcessingException(msg, e);
         }
     }
@@ -57,7 +56,6 @@ public class ClientDaoImpl implements ClientDao {
                 tx.rollback();
             }
             String msg = "Error deleting client: " + client.getName();
-            LOGGER.error(msg, e);
             throw new DataProcessingException(msg, e);
         }
     }
@@ -66,7 +64,7 @@ public class ClientDaoImpl implements ClientDao {
         Transaction tx = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             tx = session.beginTransaction();
-            Client merged = (Client) session.merge(client);
+            Client merged = session.merge(client);
             tx.commit();
             LOGGER.info("Client updated: {}", merged.getName());
             return merged;
@@ -75,7 +73,6 @@ public class ClientDaoImpl implements ClientDao {
                 tx.rollback();
             }
             String msg = "Error updating client: " + client.getName();
-            LOGGER.error(msg, e);
             throw new DataProcessingException(msg, e);
         }
     }

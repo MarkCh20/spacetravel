@@ -1,6 +1,7 @@
 package com.spacetravel.service;
 
 import com.spacetravel.dao.ClientDaoImpl;
+import com.spacetravel.dao.TicketDaoImpl;
 import com.spacetravel.entity.Client;
 import com.spacetravel.exception.ClientNotFoundException;
 import com.spacetravel.util.LoggerUtil;
@@ -11,10 +12,12 @@ import java.util.List;
 public class ClientCrudServiceImpl implements ClientCrudService {
 
     private final ClientDaoImpl clientDao;
-    private final Logger logger = LoggerUtil.getLogger(ClientCrudService.class);
+    private final TicketDaoImpl ticketDao;
+    private final Logger logger = LoggerUtil.getLogger(ClientCrudServiceImpl.class);
 
-    public ClientCrudServiceImpl(ClientDaoImpl clientDao) {
+    public ClientCrudServiceImpl(ClientDaoImpl clientDao, TicketDaoImpl ticketDao) {
         this.clientDao = clientDao;
+        this.ticketDao = ticketDao;
     }
 
     public Client create(String name) {
@@ -53,6 +56,9 @@ public class ClientCrudServiceImpl implements ClientCrudService {
                 .ifPresentOrElse(
                         client -> {
                             logger.info("Deleting client with ID: {}", id);
+
+                            ticketDao.deleteAllByClientId(id);
+
                             clientDao.delete(client);
                         },
                         () -> {

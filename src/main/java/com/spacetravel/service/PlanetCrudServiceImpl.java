@@ -1,6 +1,7 @@
 package com.spacetravel.service;
 
 import com.spacetravel.dao.PlanetDaoImpl;
+import com.spacetravel.dao.TicketDaoImpl;
 import com.spacetravel.entity.Planet;
 import com.spacetravel.exception.DuplicatePlanetIdException;
 import com.spacetravel.exception.PlanetNotFoundException;
@@ -8,14 +9,17 @@ import com.spacetravel.util.LoggerUtil;
 import org.slf4j.Logger;
 
 import java.util.List;
+import java.util.Optional;
 
 public class PlanetCrudServiceImpl implements PlanetCrudService {
 
     private final PlanetDaoImpl planetDao;
-    private final Logger logger = LoggerUtil.getLogger(PlanetCrudService.class);
+    private final TicketDaoImpl ticketDao;
+    private final Logger logger = LoggerUtil.getLogger(PlanetCrudServiceImpl.class);
 
-    public PlanetCrudServiceImpl(PlanetDaoImpl planetDao) {
+    public PlanetCrudServiceImpl(PlanetDaoImpl planetDao, TicketDaoImpl ticketDao) {
         this.planetDao = planetDao;
+        this.ticketDao = ticketDao;
     }
 
     public Planet create(String id, String name) {
@@ -32,9 +36,19 @@ public class PlanetCrudServiceImpl implements PlanetCrudService {
     public Planet findById(String id) {
         validateId(id);
         return planetDao.findById(id)
-                .orElseThrow(() -> new PlanetNotFoundException(id));
+                .orElseThrow(() -> PlanetNotFoundException.forId(id));
     }
 
+    public Planet findByName(String name) {
+        validateName(name);
+        return planetDao.findByName(name)
+                .orElseThrow(() -> PlanetNotFoundException.forName(name));
+    }
+
+    public Optional<Planet> findOptionalByName(String name) {
+        validateName(name);
+        return planetDao.findByName(name);
+    }
 
     public List<Planet> findAll() {
         return planetDao.findAll();
@@ -58,6 +72,10 @@ public class PlanetCrudServiceImpl implements PlanetCrudService {
                 .ifPresentOrElse(
                         planet -> {
                             logger.info("Deleting planet with ID: {}", id);
+
+                            ticketDao.deleteAllByFromPlanetId(id);
+                            ticketDao.deleteAllByToPlanetId(id);
+
                             planetDao.delete(planet);
                         },
                         () -> {

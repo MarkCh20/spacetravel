@@ -1,6 +1,7 @@
 package com.spacetravel.service;
 
 import com.spacetravel.dao.PlanetDaoImpl;
+import com.spacetravel.dao.TicketDaoImpl;
 import com.spacetravel.entity.Planet;
 import com.spacetravel.exception.PlanetNotFoundException;
 import org.flywaydb.core.Flyway;
@@ -31,7 +32,7 @@ class PlanetServiceTest {
 
         flyway.migrate();
 
-        service = new PlanetCrudServiceImpl(new PlanetDaoImpl());
+        service = new PlanetCrudServiceImpl(new PlanetDaoImpl(), new TicketDaoImpl());
     }
 
 

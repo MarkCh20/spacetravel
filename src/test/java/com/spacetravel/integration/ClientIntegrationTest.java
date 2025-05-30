@@ -1,6 +1,7 @@
 package com.spacetravel.integration;
 
 import com.spacetravel.dao.ClientDaoImpl;
+import com.spacetravel.dao.TicketDaoImpl;
 import com.spacetravel.entity.Client;
 import com.spacetravel.exception.ClientNotFoundException;
 import com.spacetravel.service.ClientCrudServiceImpl;
@@ -12,7 +13,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class ClientIntegrationTest {
+class ClientIntegrationTest {
 
     private static ClientCrudServiceImpl clientService;
     private static Long testClientId;
@@ -27,7 +28,7 @@ public class ClientIntegrationTest {
                 .load();
 
         flyway.migrate();
-        clientService = new ClientCrudServiceImpl(new ClientDaoImpl());
+        clientService = new ClientCrudServiceImpl(new ClientDaoImpl(), new TicketDaoImpl());
     }
 
     @Test

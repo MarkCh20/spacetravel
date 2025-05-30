@@ -1,6 +1,7 @@
 package com.spacetravel.service;
 
 import com.spacetravel.dao.ClientDaoImpl;
+import com.spacetravel.dao.TicketDaoImpl;
 import com.spacetravel.entity.Client;
 import com.spacetravel.exception.ClientNotFoundException;
 import org.flywaydb.core.Flyway;
@@ -31,7 +32,7 @@ class ClientServiceTest {
 
         flyway.migrate();
 
-        service = new ClientCrudServiceImpl(new ClientDaoImpl());
+        service = new ClientCrudServiceImpl(new ClientDaoImpl(), new TicketDaoImpl());
     }
 
 

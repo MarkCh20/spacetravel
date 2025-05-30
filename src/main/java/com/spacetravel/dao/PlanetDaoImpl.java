@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class PlanetDaoImpl implements PlanetDao {
-    private static final Logger LOGGER = LoggerUtil.getLogger(PlanetDao.class);
+    private static final Logger LOGGER = LoggerUtil.getLogger(PlanetDaoImpl.class);
 
     public Planet save(Planet planet) {
         Transaction tx = null;
@@ -27,7 +27,6 @@ public class PlanetDaoImpl implements PlanetDao {
                 tx.rollback();
             }
             String msg = "Error saving planet: " + planet.getName();
-            LOGGER.error(msg, e);
             throw new DataProcessingException(msg, e);
         }
     }
@@ -36,6 +35,27 @@ public class PlanetDaoImpl implements PlanetDao {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Planet planet = session.get(Planet.class, id);
             return Optional.ofNullable(planet);
+        }
+    }
+
+    public Optional<Planet> findByName(String name) {
+        Transaction tx = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            tx = session.beginTransaction();
+
+            Optional<Planet> planet = session.createQuery("FROM Planet p WHERE p.name = :name", Planet.class)
+                    .setParameter("name", name)
+                    .uniqueResultOptional();
+
+            tx.commit();
+            return planet;
+        } catch (Exception e) {
+            if (tx != null) {
+                tx.rollback();
+            }
+            String msg = "Error finding planet by name: " + name;
+            throw new DataProcessingException(msg, e);
+
         }
     }
 
@@ -57,7 +77,6 @@ public class PlanetDaoImpl implements PlanetDao {
                 tx.rollback();
             }
             String msg = "Error deleting planet: " + planet.getName();
-            LOGGER.error(msg, e);
             throw new DataProcessingException(msg, e);
         }
     }
@@ -66,7 +85,7 @@ public class PlanetDaoImpl implements PlanetDao {
         Transaction tx = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             tx = session.beginTransaction();
-            Planet merged = (Planet) session.merge(planet);
+            Planet merged = session.merge(planet);
             tx.commit();
             LOGGER.info("Planet updated: {}", merged.getName());
             return merged;
@@ -75,7 +94,6 @@ public class PlanetDaoImpl implements PlanetDao {
                 tx.rollback();
             }
             String msg = "Error updating planet: " + planet.getName();
-            LOGGER.error(msg, e);
             throw new DataProcessingException(msg, e);
         }
     }

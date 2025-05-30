@@ -7,11 +7,11 @@ import java.lang.reflect.Field;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ClientEntityTest {
+class ClientEntityTest {
 
 
     @Test
-    public void givenClient_whenSetIdAndName_thenGettersReturnCorrectValues() {
+    void givenClient_whenSetIdAndName_thenGettersReturnCorrectValues() {
         // Given
         Client client = new Client();
 
@@ -29,7 +29,7 @@ public class ClientEntityTest {
 
 
     @Test
-    public void givenNameInConstructor_whenCreateClient_thenNameIsSetCorrectly() {
+    void givenNameInConstructor_whenCreateClient_thenNameIsSetCorrectly() {
         // Given
         String expectedName = "Alice";
 
@@ -43,16 +43,20 @@ public class ClientEntityTest {
 
 
     @Test
-    public void givenClientClass_whenCheckAnnotations_thenAllEntityAnnotationsPresentAndCorrect() throws NoSuchFieldException {
+    void givenClientClass_whenCheckAnnotations_thenAllEntityAnnotationsPresentAndCorrect() throws NoSuchFieldException {
         // Given & When & Then
+
+        // @Entity and @Table
         assertTrue(Client.class.isAnnotationPresent(Entity.class));
         assertTrue(Client.class.isAnnotationPresent(Table.class));
         assertEquals("client", Client.class.getAnnotation(Table.class).name());
 
+        // @Id and @GeneratedValue on 'id' field
         Field idField = Client.class.getDeclaredField("id");
         assertTrue(idField.isAnnotationPresent(Id.class));
         assertTrue(idField.isAnnotationPresent(GeneratedValue.class));
 
+        // @Column on 'name' field
         Field nameField = Client.class.getDeclaredField("name");
         assertTrue(nameField.isAnnotationPresent(Column.class));
 

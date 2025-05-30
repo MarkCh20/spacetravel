@@ -7,6 +7,10 @@ import org.slf4j.Logger;
 public class FlywayConfig {
     private static final Logger LOGGER = LoggerUtil.getLogger(FlywayConfig.class);
 
+    private FlywayConfig() {
+        // Private constructor to prevent instantiation
+    }
+
     public static void migrate() {
         try {
             LOGGER.info("Starting database migration...");

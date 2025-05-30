@@ -3,7 +3,7 @@ package com.spacetravel.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LoggerUtil {
+public final class LoggerUtil {
 
     static {
         String logLevel = System.getProperty("log.level", "info");
@@ -13,6 +13,10 @@ public class LoggerUtil {
         System.setProperty("org.slf4j.simpleLogger.dateTimeFormat", "yyyy-MM-dd HH:mm:ss");
         System.setProperty("org.slf4j.simpleLogger.showThreadName", "false");
         System.setProperty("org.slf4j.simpleLogger.logFile", "System.out");
+    }
+
+    private LoggerUtil() {
+        // Utility class — no instantiation
     }
 
     public static Logger getLogger(Class<?> clazz) {

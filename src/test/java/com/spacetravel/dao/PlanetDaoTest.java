@@ -9,12 +9,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class PlanetDaoTest {
+class PlanetDaoTest {
 
     private PlanetDaoImpl planetDao;
 
     @BeforeAll
-    public void setUp() {
+    void setUp() {
         System.setProperty("config.file", "application-test.properties");
 
         Flyway flyway = Flyway.configure()
@@ -28,7 +28,7 @@ public class PlanetDaoTest {
 
 
     @Test
-    public void givenNewPlanet_whenSave_thenPlanetIsPersisted() {
+    void givenNewPlanet_whenSave_thenPlanetIsPersisted() {
         // Given
         Planet newPlanet = new Planet();
         newPlanet.setId("MAR");
@@ -46,7 +46,7 @@ public class PlanetDaoTest {
     }
 
     @Test
-    public void givenExistingPlanet_whenUpdate_thenPlanetNameIsUpdated() {
+    void givenExistingPlanet_whenUpdate_thenPlanetNameIsUpdated() {
         // Given
         Planet planet = new Planet();
         planet.setId("VEN");
@@ -67,7 +67,7 @@ public class PlanetDaoTest {
     }
 
     @Test
-    public void givenExistingPlanet_whenDelete_thenPlanetIsRemoved() {
+    void givenExistingPlanet_whenDelete_thenPlanetIsRemoved() {
         // Given
         Planet planetToDelete = new Planet();
         planetToDelete.setId("JUP");
@@ -83,7 +83,7 @@ public class PlanetDaoTest {
     }
 
     @Test
-    public void givenMultiplePlanets_whenFindAll_thenReturnListOfPlanets() {
+    void givenMultiplePlanets_whenFindAll_thenReturnListOfPlanets() {
         // Given
         Planet p1 = new Planet();
         p1.setId("EAR");
@@ -99,5 +99,39 @@ public class PlanetDaoTest {
 
         // Then
         assertTrue(actualPlanets.size() >= 2);
+    }
+
+    @Test
+    void givenSavedClient_whenFindById_thenCorrectClientIsReturned() {
+        // Given
+        Planet savedPlanet = new Planet("MARX", "MarsX");
+        planetDao.save(savedPlanet);
+        String planetId = savedPlanet.getId();
+
+        // When
+        Planet actualPlanet = planetDao.findById(planetId).orElse(null);
+
+        // Then
+        assertNotNull(actualPlanet, "Planet should be found by ID");
+        assertEquals(savedPlanet.getName(), actualPlanet.getName(), "Planet name should match the saved one");
+        assertEquals(planetId, actualPlanet.getId(), "Planet ID should match the saved one");
+    }
+
+
+    @Test
+    void givenSavedPlanet_whenFindByName_thenCorrectPlanetIsReturned() {
+        // Given
+        Planet planet = new Planet();
+        planet.setId("NEP");
+        planet.setName("Neptune");
+        planetDao.save(planet);
+
+        // When
+        Planet actualPlanet = planetDao.findByName("Neptune").orElse(null);
+
+        // Then
+        assertNotNull(actualPlanet, "Planet should be found by name");
+        assertEquals("NEP", actualPlanet.getId(), "Planet ID should match the saved one");
+        assertEquals("Neptune", actualPlanet.getName(), "Planet name should match the saved one");
     }
 }

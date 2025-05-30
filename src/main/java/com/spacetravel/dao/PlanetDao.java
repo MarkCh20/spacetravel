@@ -7,6 +7,7 @@ import java.util.Optional;
 public interface PlanetDao {
     Planet save(Planet planet);
     Optional<Planet> findById(String id);
+    Optional<Planet> findByName(String name);
     List<Planet> findAll();
     void delete(Planet planet);
     Planet update(Planet planet);

@@ -9,12 +9,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class ClientDaoTest {
+class ClientDaoTest {
 
     private ClientDaoImpl clientDao;
 
     @BeforeAll
-    public void setUp() {
+    void setUp() {
         System.setProperty("config.file", "application-test.properties");
 
         Flyway flyway = Flyway.configure()
@@ -28,7 +28,7 @@ public class ClientDaoTest {
 
 
     @Test
-    public void givenNewClient_whenSave_thenClientIsPersisted() {
+    void givenNewClient_whenSave_thenClientIsPersisted() {
         // Given
         Client newClient = new Client("John Doe");
 
@@ -44,7 +44,7 @@ public class ClientDaoTest {
     }
 
     @Test
-    public void givenExistingClient_whenUpdate_thenClientNameIsUpdated() {
+    void givenExistingClient_whenUpdate_thenClientNameIsUpdated() {
         // Given
         Client client = new Client("Old Name");
         clientDao.save(client);
@@ -62,7 +62,7 @@ public class ClientDaoTest {
     }
 
     @Test
-    public void givenExistingClient_whenDelete_thenClientIsRemoved() {
+    void givenExistingClient_whenDelete_thenClientIsRemoved() {
         // Given
         Client clientToDelete = new Client("To Delete");
         clientDao.save(clientToDelete);
@@ -76,7 +76,7 @@ public class ClientDaoTest {
     }
 
     @Test
-    public void givenMultipleClients_whenFindAll_thenReturnListOfClients() {
+    void givenMultipleClients_whenFindAll_thenReturnListOfClients() {
         // Given
         Client client1 = new Client("Alice");
         Client client2 = new Client("Bob");
@@ -88,5 +88,21 @@ public class ClientDaoTest {
 
         // Then
         assertTrue(actualClients.size() >= 2);
+    }
+
+    @Test
+    void givenSavedClient_whenFindById_thenCorrectClientIsReturned() {
+        // Given
+        Client savedClient = new Client("Find Me");
+        clientDao.save(savedClient);
+        Long clientId = savedClient.getId();
+
+        // When
+        Client actualClient = clientDao.findById(clientId).orElse(null);
+
+        // Then
+        assertNotNull(actualClient, "Client should be found by ID");
+        assertEquals("Find Me", actualClient.getName(), "Client name should match the saved one");
+        assertEquals(clientId, actualClient.getId(), "Client ID should match the saved one");
     }
 }
