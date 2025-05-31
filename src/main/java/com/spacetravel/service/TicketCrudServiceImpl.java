@@ -1,9 +1,9 @@
 package com.spacetravel.service;
 
-import com.spacetravel.dao.TicketDaoImpl;
+import com.spacetravel.dao.PlanetDao;
+import com.spacetravel.dao.TicketDao;
 import com.spacetravel.entity.Planet;
 import com.spacetravel.entity.Ticket;
-import com.spacetravel.dao.PlanetDaoImpl;
 import com.spacetravel.exception.PlanetNotFoundException;
 import com.spacetravel.exception.TicketNotFoundException;
 import com.spacetravel.util.LoggerUtil;
@@ -14,12 +14,12 @@ import java.util.List;
 
 public class TicketCrudServiceImpl implements TicketCrudService {
 
-    private final TicketDaoImpl ticketDao;
-    private final PlanetDaoImpl planetDao;
+    private final TicketDao ticketDao;
+    private final PlanetDao planetDao;
 
     private final Logger logger = LoggerUtil.getLogger(TicketCrudServiceImpl.class);
 
-    public TicketCrudServiceImpl(TicketDaoImpl ticketDao, PlanetDaoImpl planetDao) {
+    public TicketCrudServiceImpl(TicketDao ticketDao, PlanetDao planetDao) {
         this.ticketDao = ticketDao;
         this.planetDao = planetDao;
     }

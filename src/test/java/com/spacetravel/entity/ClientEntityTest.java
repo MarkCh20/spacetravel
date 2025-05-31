@@ -64,4 +64,16 @@ class ClientEntityTest {
         assertFalse(nameColumn.nullable());
         assertEquals(200, nameColumn.length());
     }
+
+    @Test
+    void givenClientClass_whenCheckTicketsFieldAnnotation_thenCorrectMappingIsPresent() throws NoSuchFieldException {
+        // Given & When & Then
+        Field ticketsField = Client.class.getDeclaredField("tickets");
+        assertTrue(ticketsField.isAnnotationPresent(OneToMany.class));
+
+        OneToMany oneToMany = ticketsField.getAnnotation(OneToMany.class);
+        assertEquals("client", oneToMany.mappedBy());
+        assertEquals(CascadeType.ALL, oneToMany.cascade()[0]);
+        assertTrue(oneToMany.orphanRemoval());
+    }
 }

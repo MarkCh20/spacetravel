@@ -1,7 +1,7 @@
 package com.spacetravel.service;
 
-import com.spacetravel.dao.ClientDaoImpl;
-import com.spacetravel.dao.TicketDaoImpl;
+import com.spacetravel.dao.ClientDao;
+import com.spacetravel.dao.TicketDao;
 import com.spacetravel.entity.Client;
 import com.spacetravel.exception.ClientNotFoundException;
 import com.spacetravel.util.LoggerUtil;
@@ -11,11 +11,11 @@ import java.util.List;
 
 public class ClientCrudServiceImpl implements ClientCrudService {
 
-    private final ClientDaoImpl clientDao;
-    private final TicketDaoImpl ticketDao;
+    private final ClientDao clientDao;
+    private final TicketDao ticketDao;
     private final Logger logger = LoggerUtil.getLogger(ClientCrudServiceImpl.class);
 
-    public ClientCrudServiceImpl(ClientDaoImpl clientDao, TicketDaoImpl ticketDao) {
+    public ClientCrudServiceImpl(ClientDao clientDao, TicketDao ticketDao) {
         this.clientDao = clientDao;
         this.ticketDao = ticketDao;
     }

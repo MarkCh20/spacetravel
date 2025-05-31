@@ -11,6 +11,9 @@ import com.spacetravel.exception.ClientNotFoundException;
 import com.spacetravel.exception.DuplicatePlanetIdException;
 import com.spacetravel.exception.PlanetNotFoundException;
 import com.spacetravel.exception.TicketNotFoundException;
+import com.spacetravel.service.ClientCrudService;
+import com.spacetravel.service.PlanetCrudService;
+import com.spacetravel.service.TicketCrudService;
 import com.spacetravel.service.ClientCrudServiceImpl;
 import com.spacetravel.service.PlanetCrudServiceImpl;
 import com.spacetravel.service.TicketCrudServiceImpl;
@@ -24,9 +27,9 @@ import java.util.List;
 
 public class CommandParser {
 
-    private final ClientCrudServiceImpl clientService;
-    private final PlanetCrudServiceImpl planetService;
-    private final TicketCrudServiceImpl ticketService;
+    private final ClientCrudService clientService;
+    private final PlanetCrudService planetService;
+    private final TicketCrudService ticketService;
     private final Logger logger = LoggerUtil.getLogger(CommandParser.class);
 
     public CommandParser() {
